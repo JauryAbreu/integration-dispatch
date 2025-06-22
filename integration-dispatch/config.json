@@ -1,0 +1,226 @@
+{
+  "SourceConnectionString": "Server=DESCONOCIDO;Database=NYX_AGORA;Trusted_Connection=True;",
+  "DestinationConnectionString": "Server=DESCONOCIDO;Database=dispatch-db;Trusted_Connection=True;",
+  "TransactionTable": "RBOTRANSACTIONTABLE",
+  "HeaderTable": "Headers",
+  "LinesTable": "Lines",
+  "HeaderId": "RECEIPTID",
+  "CanBeDispatched": "CanBeDispatched",
+  "Quantity": "Quantity",
+  "TableMappings": [
+    {
+      "SourceTable": "CUSTOMER",
+      "DestinationTable": "Customers",
+      "ColumnMappings": [
+        {
+          "SourceColumn": "ACCOUNTNUM",
+          "DestinationColumn": "CustomerId"
+        },
+        {
+          "SourceColumn": "FIRSTNAME",
+          "DestinationColumn": "FirstName"
+        },
+        {
+          "SourceColumn": "LASTNAME",
+          "DestinationColumn": "LastName"
+        },
+        {
+          "SourceColumn": "VATNUM",
+          "DestinationColumn": "VatNumber"
+        },
+        {
+          "SourceColumn": "NAMEALIAS",
+          "DestinationColumn": "Company"
+        },
+        {
+          "SourceColumn": "EMAIL",
+          "DestinationColumn": "Email"
+        },
+        {
+          "SourceColumn": "PHONE",
+          "DestinationColumn": "Phone"
+        }
+      ],
+      "WhereMappings": [
+        {
+          "SourceKey": "ACCOUNTNUM",
+          "DestinationKey": "CustomerId"
+        }
+      ],
+      "JoinTables": [
+        {
+          "SourceTable": "CUSTOMERADDRESS",
+          "ColumnMappings": [
+            {
+              "SourceColumn": "ADDRESS",
+              "DestinationColumn": "Address"
+            },
+            {
+              "SourceColumn": "STATE",
+              "DestinationColumn": "State"
+            },
+            {
+              "SourceColumn": "CITY",
+              "DestinationColumn": "City"
+            }
+          ],
+          "JoinCondition": {
+            "SourceKey": "ACCOUNTNUM",
+            "TargetKey": "ACCOUNTNUM"
+          }
+        }
+      ]
+    },
+    {
+      "SourceTable": "RBOTRANSACTIONTABLE",
+      "DestinationTable": "Headers",
+      "ColumnMappings": [
+        {
+          "SourceColumn": "STORE",
+          "DestinationColumn": "StoreCode"
+        },
+        {
+          "SourceColumn": "RECEIPTID",
+          "DestinationColumn": "ReceiptId"
+        },
+        {
+          "SourceColumn": "CUSTACCOUNT",
+          "DestinationColumn": "CustomerCode"
+        },
+        {
+          "SourceColumn": "TRANSDATE",
+          "DestinationColumn": "CreatedDate"
+        },
+        {
+          "SourceColumn": "NUMBEROFITEMS",
+          "DestinationColumn": "Quantity"
+        }
+      ],
+      "WhereMappings": [
+        {
+          "SourceKey": "TRANSDATE",
+          "DestinationKey": "CreatedDate"
+        },
+        {
+          "SourceKey": "RECEIPTID",
+          "DestinationKey": "ReceiptId"
+        },
+        {
+          "SourceKey": "STORE",
+          "DestinationKey": "StoreId"
+        },
+        {
+          "SourceKey": "CUSTACCOUNT",
+          "DestinationKey": "CustomerId"
+        },
+        {
+          "SourceKey": "PAYMENTAMOUNT",
+          "DestinationKey": "Payment"
+        }
+      ]
+    },
+    {
+      "SourceTable": "RBOTRANSACTIONSALESTRANS",
+      "DestinationTable": "Lines",
+      "ColumnMappings": [
+        {
+          "SourceColumn": "RECEIPTID",
+          "DestinationColumn": "HeaderId"
+        },
+        {
+          "SourceColumn": "LINENUM",
+          "DestinationColumn": "Line"
+        },
+        {
+          "SourceColumn": "ITEMID",
+          "DestinationColumn": "Sku"
+        },
+        {
+          "SourceColumn": "BARCODE",
+          "DestinationColumn": "Barcode"
+        },
+        {
+          "SourceColumn": "DESCRIPTION",
+          "DestinationColumn": "Description"
+        },
+        {
+          "SourceColumn": "COMMENT",
+          "DestinationColumn": "Notes"
+        },
+        {
+          "SourceColumn": "QTY",
+          "DestinationColumn": "Quantity"
+        },
+        {
+          "SourceColumn": "TRANSDATE",
+          "DestinationColumn": "CreatedDate"
+        }
+      ],
+      "WhereMappings": [
+        {
+          "SourceKey": "RECEIPTID",
+          "DestinationKey": "HeaderId"
+        },
+        {
+          "SourceKey": "LINENUM",
+          "DestinationKey": "Line"
+        }
+      ],
+      "JoinTables": [
+        {
+          "SourceTable": "RETAILITEM",
+          "ColumnMappings": [
+            {
+              "SourceColumn": "CANBEDISPATCHED",
+              "DestinationColumn": "CanBeDispatched"
+            }
+          ],
+          "JoinCondition": {
+            "SourceKey": "ITEMID",
+            "TargetKey": "ITEMID"
+          }
+        }
+      ]
+    },
+    {
+      "SourceTable": "RBOSTORETABLE",
+      "DestinationTable": "Stores",
+      "ColumnMappings": [
+        {
+          "SourceColumn": "STOREID",
+          "DestinationColumn": "StoreId"
+        },
+        {
+          "SourceColumn": "NAME",
+          "DestinationColumn": "Description"
+        }
+      ],
+      "WhereMappings": [
+        {
+          "SourceKey": "STOREID",
+          "DestinationKey": "StoreId"
+        }
+      ]
+    },
+    {
+      "SourceTable": "BCNCFHISTORY",
+      "DestinationTable": "Fiscal",
+      "ColumnMappings": [
+        {
+          "SourceColumn": "RECEIPTID",
+          "DestinationColumn": "ReceiptId"
+        },
+        {
+          "SourceColumn": "NCFNUMBER",
+          "DestinationColumn": "NCFNumber"
+        }
+      ],
+      "WhereMappings": [
+        {
+          "SourceKey": "RECEIPTID",
+          "DestinationKey": "ReceiptId"
+        }
+      ]
+    }
+  ]
+}
