@@ -9,13 +9,15 @@ namespace integration_dispatch
     {
         private readonly IConfigLoader _configLoader;
         private readonly IDataTransferService _dataTransferService;
+        private readonly LastRunManager _lastRunManager;
         private bool _isRunning;
         private Config _config;
 
-        public DataTransferApp(IConfigLoader configLoader = null, IDataTransferService dataTransferService = null)
+        public DataTransferApp(IConfigLoader configLoader = null, IDataTransferService dataTransferService = null, LastRunManager lastRunManager = null)
         {
             InitializeComponent();
             _configLoader = configLoader ?? new ConfigLoader();
+            _lastRunManager = lastRunManager ?? new LastRunManager();
             _dataTransferService = dataTransferService ?? CreateDataTransferService();
             InitializeAsync();
         }
@@ -40,7 +42,7 @@ namespace integration_dispatch
         private IDataTransferService CreateDataTransferService()
         {
             var dbService = new DatabaseService(_config);
-            return new DataTransferService(_config, dbService, status => lblStatus.Text += status, counter => lblCounter.Text = counter);
+            return new DataTransferService(_config, dbService, status => lblStatus.Text += status, counter => lblCounter.Text = counter, _lastRunManager);
         }
 
         private async void btnRun_Click(object sender, EventArgs e)
@@ -74,15 +76,16 @@ namespace integration_dispatch
             Application.SetCompatibleTextRenderingDefault(false);
 
             var app = new DataTransferApp();
+
             if (args.Length > 0 && int.TryParse(args[0], out int number))
             {
-                await app._dataTransferService.RunDataTransferAsync(DateTime.Now.AddMinutes(Math.Abs(number) * -1));
-            }
-            else
-            {
-                await app._dataTransferService.RunDataTransferAsync(DateTime.Now.AddMinutes(-30));
-            }
 
+                var lastRunManager = new LastRunManager();
+
+                var lastRunDate = await lastRunManager.LoadLastRunDateAsync();
+                DateTime startDate = lastRunDate.HasValue ? lastRunDate.Value.AddMinutes(-1) : DateTime.Now.AddMinutes(number);
+                await app._dataTransferService.RunDataTransferAsync(startDate);
+            }
             Application.Run(app);
         }
     }

@@ -10,13 +10,15 @@ namespace integration_dispatch.Utils
         private readonly IDatabaseService _dbService;
         private readonly Action<string> _updateStatus;
         private readonly Action<string> _updateCounter;
+        private readonly LastRunManager _lastRunManager;
 
-        public DataTransferService(Config config, IDatabaseService dbService, Action<string> updateStatus, Action<string> updateCounter)
+        public DataTransferService(Config config, IDatabaseService dbService, Action<string> updateStatus, Action<string> updateCounter, LastRunManager lastRunManager = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _dbService = dbService ?? throw new ArgumentNullException(nameof(dbService));
             _updateStatus = updateStatus ?? throw new ArgumentNullException(nameof(updateStatus));
             _updateCounter = updateCounter ?? throw new ArgumentNullException(nameof(updateCounter));
+            _lastRunManager = lastRunManager ?? new LastRunManager();
         }
 
         public async Task RunDataTransferAsync(DateTime startDate)
@@ -81,6 +83,8 @@ namespace integration_dispatch.Utils
                     throw;
                 }
             }
+
+            await _lastRunManager.SaveLastRunDateAsync(startDate);
         }
 
         private Dictionary<string, string> GetKeyValues(Transaction transaction, List<WhereMapping> whereMappings)
